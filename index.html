@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>LeafLens — AI Plant Health Diagnosis</title>
+    <meta name="description"
+          content="Point your camera at any plant and get an instant AI-powered diagnosis. Identify diseases, pests, and deficiencies in seconds."/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+          rel="stylesheet"/>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{
+          --teal:#14B8A6;
+          --teal-dark:#0F766E;
+          --forest:#064E3B;
+          --mint:#DCFCE7;
+          --amber:#F59E0B;
+          --bg:#F4F4F5;
+          --surface:#fff;
+          --text:#18181B;
+          --muted:#52525B;
+          --radius:16px;
+        }
+        html{scroll-behavior:smooth}
+        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+
+        /* ── NAV ── */
+        nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 5%;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:space-between;height:64px}
+        .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+        .nav-logo svg{width:34px;height:34px}
+        .nav-logo span{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--forest)}
+        .nav-links{display:flex;align-items:center;gap:28px}
+        .nav-links a{text-decoration:none;color:var(--muted);font-size:.9rem;font-weight:500;transition:color .2s}
+        .nav-links a:hover{color:var(--teal-dark)}
+        .nav-cta{background:var(--teal);color:#fff;padding:9px 20px;border-radius:50px;font-weight:600;font-size:.88rem;text-decoration:none;transition:background .2s,transform .15s}
+        .nav-cta:hover{background:var(--teal-dark);transform:translateY(-1px)}
+
+        /* ── HERO ── */
+        .hero{min-height:100vh;display:flex;align-items:center;background:linear-gradient(145deg,var(--forest) 0%,var(--teal-dark) 45%,var(--teal) 100%);position:relative;overflow:hidden;padding:100px 5% 80px}
+        .hero::before{content:'';position:absolute;top:-30%;right:-15%;width:60vw;height:60vw;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none}
+        .hero::after{content:'';position:absolute;bottom:-20%;left:-10%;width:40vw;height:40vw;border-radius:50%;background:rgba(6,78,59,0.4);pointer-events:none}
+        .hero-inner{max-width:1100px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;position:relative;z-index:1}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);padding:6px 14px;border-radius:50px;font-size:.8rem;color:rgba(255,255,255,0.9);font-weight:500;margin-bottom:20px}
+        .hero-badge span{width:6px;height:6px;background:#4ADE80;border-radius:50%;animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+        h1{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,4.5vw,3.8rem);font-weight:800;color:#fff;line-height:1.1;margin-bottom:20px}
+        h1 em{font-style:normal;color:#6EE7B7}
+        .hero-sub{font-size:1.05rem;color:rgba(255,255,255,0.75);max-width:460px;margin-bottom:36px;line-height:1.7}
+        .hero-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+        .btn-primary{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--forest);padding:13px 26px;border-radius:50px;font-weight:700;font-size:.95rem;text-decoration:none;transition:transform .2s,box-shadow .2s}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+        .btn-primary svg{width:18px;height:18px}
+        .btn-ghost{color:rgba(255,255,255,0.8);font-size:.88rem;text-decoration:none;font-weight:500;border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:2px;transition:color .2s}
+        .btn-ghost:hover{color:#fff}
+        .hero-stats{display:flex;gap:28px;margin-top:36px}
+        .hero-stat{text-align:center}
+        .hero-stat strong{display:block;font-family:'Playfair Display',serif;font-size:1.7rem;color:#fff}
+        .hero-stat span{font-size:.78rem;color:rgba(255,255,255,0.6);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+
+        /* Hero phone mockup */
+        .hero-visual{display:flex;justify-content:center;align-items:center}
+        .phone-frame{width:240px;height:480px;background:linear-gradient(160deg,#1a2e1a,#0d1f0d);border-radius:38px;border:3px solid rgba(255,255,255,0.12);position:relative;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.05);flex-shrink:0}
+        .phone-screen{position:absolute;inset:0;padding:20px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+        .phone-logo-ring{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center}
+        .phone-logo-ring svg{width:44px;height:44px;opacity:.9}
+        .phone-app-name{font-family:'Playfair Display',serif;color:#fff;font-size:1.2rem;font-weight:700}
+        .phone-tag{color:rgba(255,255,255,0.5);font-size:.7rem;text-align:center;margin-top:-8px}
+        .phone-divider{width:60%;height:1px;background:rgba(255,255,255,0.08);margin:4px 0}
+        .phone-scan-card{width:100%;background:linear-gradient(135deg,var(--teal-dark),var(--teal));border-radius:14px;padding:14px;cursor:default}
+        .phone-scan-card p{color:#fff;font-size:.7rem;font-weight:600;margin-bottom:4px}
+        .phone-scan-card small{color:rgba(255,255,255,0.65);font-size:.62rem}
+        .phone-notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:60px;height:5px;background:rgba(255,255,255,0.08);border-radius:3px}
+
+        /* ── FEATURES ── */
+        .section{padding:96px 5%;max-width:1100px;margin:0 auto}
+        .section-label{display:inline-block;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--teal-dark);background:var(--mint);padding:4px 12px;border-radius:50px;margin-bottom:12px}
+        .section-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:700;line-height:1.15;margin-bottom:14px}
+        .section-sub{color:var(--muted);max-width:520px;font-size:1rem;line-height:1.7}
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:24px;margin-top:56px}
+        .feature-card{background:var(--surface);border-radius:var(--radius);padding:28px;border:1px solid #E4E4E7;transition:transform .25s,box-shadow .25s}
+        .feature-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.08)}
+        .feature-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:1.3rem}
+        .feature-card h3{font-weight:700;font-size:1.05rem;margin-bottom:8px}
+        .feature-card p{color:var(--muted);font-size:.88rem;line-height:1.6}
+        .icon-green{background:#DCFCE7}
+        .icon-amber{background:#FEF3C7}
+        .icon-blue{background:#DBEAFE}
+        .icon-purple{background:#EDE9FE}
+        .icon-rose{background:#FFE4E6}
+        .icon-teal{background:#CCFBF1}
+
+        /* ── HOW IT WORKS ── */
+        .how-section{background:linear-gradient(160deg,var(--forest) 0%,var(--teal-dark) 100%);padding:96px 5%}
+        .how-inner{max-width:1100px;margin:0 auto}
+        .how-section .section-title{color:#fff}
+        .how-section .section-sub{color:rgba(255,255,255,0.65)}
+        .how-section .section-label{background:rgba(255,255,255,0.1);color:#6EE7B7}
+        .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px;margin-top:56px}
+        .step{text-align:center;position:relative}
+        .step-num{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:#fff;margin:0 auto 16px}
+        .step h3{color:#fff;font-size:.95rem;font-weight:600;margin-bottom:8px}
+        .step p{color:rgba(255,255,255,0.6);font-size:.83rem;line-height:1.6}
+
+        /* ── PRICING ── */
+        .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:56px;align-items:start}
+        .plan-card{background:var(--surface);border-radius:20px;padding:28px;border:1.5px solid #E4E4E7;position:relative}
+        .plan-card.featured{border-color:var(--teal);box-shadow:0 0 0 4px rgba(20,184,166,.08)}
+        .plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--teal);color:#fff;font-size:.72rem;font-weight:700;padding:3px 12px;border-radius:50px;white-space:nowrap}
+        .plan-name{font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+        .plan-price{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:700;line-height:1}
+        .plan-price sup{font-size:1.1rem;vertical-align:super;font-family:'DM Sans',sans-serif;font-weight:600}
+        .plan-period{font-size:.8rem;color:var(--muted);margin-top:2px}
+        .plan-divider{height:1px;background:#F4F4F5;margin:20px 0}
+        .plan-features{list-style:none;display:flex;flex-direction:column;gap:9px}
+        .plan-features li{font-size:.85rem;display:flex;align-items:flex-start;gap:8px;color:var(--text)}
+        .plan-features li::before{content:'✓';color:var(--teal);font-weight:700;flex-shrink:0;margin-top:1px}
+        .plan-features li.muted::before{content:'–';color:#D4D4D8}
+        .plan-features li.muted{color:var(--muted)}
+        .plan-cta{display:block;width:100%;margin-top:22px;padding:12px;text-align:center;border-radius:50px;font-weight:700;font-size:.88rem;text-decoration:none;transition:all .2s}
+        .plan-cta-ghost{border:2px solid #E4E4E7;color:var(--muted)}
+        .plan-cta-ghost:hover{border-color:var(--teal);color:var(--teal-dark)}
+        .plan-cta-solid{background:var(--teal);color:#fff;border:2px solid var(--teal)}
+        .plan-cta-solid:hover{background:var(--teal-dark)}
+
+        /* ── DOWNLOAD CTA ── */
+        .cta-section{background:var(--surface);padding:96px 5%;text-align:center;border-top:1px solid #E4E4E7}
+        .cta-section h2{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.6rem);font-weight:700;margin-bottom:14px}
+        .cta-section p{color:var(--muted);max-width:440px;margin:0 auto 32px;font-size:.95rem}
+        .play-btn{display:inline-flex;align-items:center;gap:12px;background:#18181B;color:#fff;padding:14px 28px;border-radius:14px;text-decoration:none;transition:transform .2s,box-shadow .2s}
+        .play-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+        .play-btn svg{width:22px;height:22px}
+        .play-btn-text{text-align:left}
+        .play-btn-text small{display:block;font-size:.68rem;opacity:.65}
+        .play-btn-text strong{font-size:.92rem;font-weight:700}
+
+        /* ── FOOTER ── */
+        footer{background:var(--forest);padding:48px 5%;color:rgba(255,255,255,0.6)}
+        .footer-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:start}
+        .footer-brand{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+        .footer-brand span{font-family:'Playfair Display',serif;color:#fff;font-size:1.1rem;font-weight:700}
+        .footer-desc{font-size:.82rem;line-height:1.6;max-width:320px}
+        .footer-links{display:flex;flex-direction:column;gap:8px;text-align:right}
+        .footer-links a{color:rgba(255,255,255,0.6);text-decoration:none;font-size:.83rem;transition:color .2s}
+        .footer-links a:hover{color:#fff}
+        .footer-bottom{max-width:1100px;margin:28px auto 0;padding-top:20px;border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;font-size:.75rem;color:rgba(255,255,255,0.35)}
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:768px){
+          .hero-inner{grid-template-columns:1fr;text-align:center}
+          .hero-visual{display:none}
+          .hero-actions{justify-content:center}
+          .hero-stats{justify-content:center}
+          .footer-inner{grid-template-columns:1fr}
+          .footer-links{text-align:left}
+          .nav-links a:not(.nav-cta){display:none}
+          .footer-bottom{flex-direction:column;gap:6px}
+        }
+        /* ── ENTRANCE ANIMATIONS ── */
+        .fade-up{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+        .fade-up.visible{opacity:1;transform:none}
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="nav-logo">
+        <svg viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="500" height="500" rx="100" fill="#14B8A6"/>
+            <path d="M246.94,63.1C251.49,62.49 260.02,63.55 264.74,63.95C290.92,66.12 318.49,76 340.15,90.93C378.58,117.46 404.93,158.14 413.45,204.05C422.66,252.28 411.97,302.17 383.81,342.39C357.53,380.14 313.89,407.83 267.76,412.52C249.63,414.36 226.43,413.22 211.08,402.37C200.6,395.09 193.48,383.9 191.34,371.32C189.33,359.65 190.78,349.36 195.45,338.58C197,335.01 197.82,332.69 200.09,329.47C199.86,332.95 199.26,337.5 199.65,340.93C203.24,372.49 235.45,378.77 261.72,376.64C295.53,373.9 326.39,355.28 347.7,329.57C365.86,307.92 377.02,281.25 379.69,253.1C381.72,233.63 379.66,213.76 373.94,195.02C365.96,169.35 350.7,146.55 330.01,129.39C304.16,108.07 272.17,97.37 238.69,100.6C208.84,103.52 180.99,116.92 160.09,138.43C132.93,165.95 119.26,202.51 119.56,241C120.13,278.43 135.52,314.12 162.36,340.22C166.68,325 177.79,306.87 187.56,294.66C205.66,272.28 228.14,253.83 253.63,240.46C255.86,239.27 263.3,235.15 265.57,234.9L265.75,235.29C265.39,236.1 261.61,238.89 260.57,239.75C255.31,244.08 250.17,248.54 245.14,253.13C215.46,280.27 181.23,317.12 177.84,359.45C176.66,374.17 180.74,390.5 190.92,401.55C180.44,398.64 160.42,386.22 151.66,379.51C114.82,351.19 91.66,308.63 85.07,262.98C72.47,175.74 127.85,85.22 216.36,66.8C222.28,65.51 228.27,64.59 234.31,64.04C238,63.72 243.2,63.65 246.56,63.16L246.94,63.1Z"
+                  fill="white"/>
+            <path d="M321.96,146.85L322.58,147.05C323.93,148.82 325.35,153.8 326.07,156.05C340.99,203.38 333.5,261.89 293.25,294.73C272.29,311.83 245.32,319.21 218.86,321.92C215.49,322.27 206.92,322.95 203.65,322.61C203.32,321.16 206.15,315.77 206.94,314.1C213.34,300.6 222.8,288.91 232.79,277.92C247.9,261.28 266.38,247.72 280.4,230.09C282.75,227.15 292.15,212.48 292.35,209.43L291.86,209.38C287.42,213.48 275.08,220.59 269.58,223.39C244.97,235.9 221.77,244.91 201.51,264.62C195.8,270.1 190.43,275.92 185.43,282.04C182.16,286.1 179.04,290.26 176.06,294.54C175.03,296.02 172.37,300.94 170.94,301.37C170.4,300.88 170.23,298.98 170.16,298.15C168.74,279.85 169.41,265.37 176.15,248.27C187,220.74 207.24,207.46 233.43,196.29C244.38,191.61 254.76,187.57 266,183.37C280.31,178.03 295.16,171.79 307.35,162.44C313.32,157.87 317.39,152.71 321.96,146.85Z"
+                  fill="white"/>
+        </svg>
+        <span>LeafLens</span>
+    </a>
+    <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="https://play.google.com/store/apps/details?id=com.leaflens.app" class="nav-cta">Get
+            the App</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-inner">
+        <div>
+            <div class="hero-badge"><span></span> Now on Google Play</div>
+            <h1>Your plants are<br/><em>trying to tell you</em><br/>something.</h1>
+            <p class="hero-sub">LeafLens uses Claude AI to identify plant diseases, pests, and
+                deficiencies from a single photo — and gives you a step-by-step treatment plan in
+                seconds.</p>
+            <div class="hero-actions">
+                <a href="https://play.google.com/store/apps/details?id=com.leaflens.app"
+                   class="btn-primary">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="m 12.954 11.616 l 2.957 -2.957 L 6.36 3.291 c -0.633 -0.342 -1.226 -0.39 -1.746 -0.016 l 8.34 8.341 Z m 3.461 3.462 l 3.074 -1.729 c 0.6 -0.336 0.929 -0.812 0.929 -1.34 c 0 -0.527 -0.329 -1.004 -0.928 -1.34 l -2.783 -1.563 l -3.133 3.132 l 2.841 2.84 Z M 4.1 4.002 c -0.064 0.197 -0.1 0.417 -0.1 0.658 v 14.705 c 0 0.381 0.084 0.709 0.236 0.97 l 8.097 -8.098 L 4.1 4.002 Z m 8.854 8.855 L 4.902 20.91 c 0.154 0.059 0.32 0.09 0.495 0.09 c 0.312 0 0.637 -0.092 0.968 -0.276 l 9.255 -5.197 l -2.666 -2.67 Z"/>
+                    </svg>
+                    Download Free
+                </a>
+                <a href="#features" class="btn-ghost">See what it does →</a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat"><strong>10,000+</strong><span>Plant species</span></div>
+                <div class="hero-stat"><strong>95%</strong><span>AI accuracy</span></div>
+                <div class="hero-stat"><strong>Free</strong><span>to start</span></div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="phone-screen">
+                    <div class="phone-logo-ring">
+                        <svg viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!--              <path d="M246.94,63.1C251.49,62.49 260.02,63.55 264.74,63.95C290.92,66.12 318.49,76 340.15,90.93C378.58,117.46 404.93,158.14 413.45,204.05C422.66,252.28 411.97,302.17 383.81,342.39C357.53,380.14 313.89,407.83 267.76,412.52C249.63,414.36 226.43,413.22 211.08,402.37C200.6,395.09 193.48,383.9 191.34,371.32C189.33,359.65 190.78,349.36 195.45,338.58C197,335.01 197.82,332.69 200.09,329.47C199.86,332.95 199.26,337.5 199.65,340.93C203.24,372.49 235.45,378.77 261.72,376.64C295.53,373.9 326.39,355.28 347.7,329.57C365.86,307.92 377.02,281.25 379.69,253.1C381.72,233.63 379.66,213.76 373.94,195.02C365.96,169.35 350.7,146.55 330.01,129.39C304.16,108.07 272.17,97.37 238.69,100.6C208.84,103.52 180.99,116.92 160.09,138.43C132.93,165.95 119.26,202.51 119.56,241C120.13,278.43 135.52,314.12 162.36,340.22C166.68,325 177.79,306.87 187.56,294.66C205.66,272.28 228.14,253.83 253.63,240.46C255.86,239.27 263.3,235.15 265.57,234.9L265.75,235.29C265.39,236.1 261.61,238.89 260.57,239.75C255.31,244.08 250.17,248.54 245.14,253.13C215.46,280.27 181.23,317.12 177.84,359.45C176.66,374.17 180.74,390.5 190.92,401.55C180.44,398.64 160.42,386.22 151.66,379.51C114.82,351.19 91.66,308.63 85.07,262.98C72.47,175.74 127.85,85.22 216.36,66.8C222.28,65.51 228.27,64.59 234.31,64.04C238,63.72 243.2,63.65 246.56,63.16L246.94,63.1Z" fill="rgba(255,255,255,0.9)"/>-->
+                            <path
+                                    d="M246.94,63.1C251.49,62.49 260.02,63.55 264.74,63.95C290.92,66.12 318.49,76 340.15,90.93C378.58,117.46 404.93,158.14 413.45,204.05C422.66,252.28 411.97,302.17 383.81,342.39C357.53,380.14 313.89,407.83 267.76,412.52C249.63,414.36 226.43,413.22 211.08,402.37C200.6,395.09 193.48,383.9 191.34,371.32C189.33,359.65 190.78,349.36 195.45,338.58C197,335.01 197.82,332.69 200.09,329.47C199.86,332.95 199.26,337.5 199.65,340.93C203.24,372.49 235.45,378.77 261.72,376.64C295.53,373.9 326.39,355.28 347.7,329.57C365.86,307.92 377.02,281.25 379.69,253.1C381.72,233.63 379.66,213.76 373.94,195.02C365.96,169.35 350.7,146.55 330.01,129.39C304.16,108.07 272.17,97.37 238.69,100.6C208.84,103.52 180.99,116.92 160.09,138.43C132.93,165.95 119.26,202.51 119.56,241C120.13,278.43 135.52,314.12 162.36,340.22C166.68,325 177.79,306.87 187.56,294.66C205.66,272.28 228.14,253.83 253.63,240.46C255.86,239.27 263.3,235.15 265.57,234.9L265.75,235.29C265.39,236.1 261.61,238.89 260.57,239.75C255.31,244.08 250.17,248.54 245.14,253.13C215.46,280.27 181.23,317.12 177.84,359.45C176.66,374.17 180.74,390.5 190.92,401.55C180.44,398.64 160.42,386.22 151.66,379.51C114.82,351.19 91.66,308.63 85.07,262.98C72.47,175.74 127.85,85.22 216.36,66.8C222.28,65.51 228.27,64.59 234.31,64.04C238,63.72 243.2,63.65 246.56,63.16L246.94,63.1Z"
+                                    fill="rgba(255,255,255,0.9)"/>
+                            <path
+                                    d="M321.96,146.85L322.58,147.05C323.93,148.82 325.35,153.8 326.07,156.05C340.99,203.38 333.5,261.89 293.25,294.73C272.29,311.83 245.32,319.21 218.86,321.92C215.49,322.27 206.92,322.95 203.65,322.61C203.32,321.16 206.15,315.77 206.94,314.1C213.34,300.6 222.8,288.91 232.79,277.92C247.9,261.28 266.38,247.72 280.4,230.09C282.75,227.15 292.15,212.48 292.35,209.43L291.86,209.38C287.42,213.48 275.08,220.59 269.58,223.39C244.97,235.9 221.77,244.91 201.51,264.62C195.8,270.1 190.43,275.92 185.43,282.04C182.16,286.1 179.04,290.26 176.06,294.54C175.03,296.02 172.37,300.94 170.94,301.37C170.4,300.88 170.23,298.98 170.16,298.15C168.74,279.85 169.41,265.37 176.15,248.27C187,220.74 207.24,207.46 233.43,196.29C244.38,191.61 254.76,187.57 266,183.37C280.31,178.03 295.16,171.79 307.35,162.44C313.32,157.87 317.39,152.71 321.96,146.85Z"
+                                    fill="rgba(255,255,255,0.9)"/>
+                            <path
+                                    d="M190.6,143.81C193,144.92 195.01,156.92 198.13,160.13C203.79,165.97 210.59,166.02 217.25,169.15C216.05,169.63 213.67,170.34 212.42,170.67C197.03,174.79 196.29,180.33 191.63,194.13C191.18,194.13 190.9,194.23 190.76,193.95C188.43,189.02 187.85,184.34 184.96,179.52C180.73,172.45 172.61,172.74 166.65,169.36L166.56,168.9C167.27,167.96 174.93,165.62 176.95,164.81C187.05,160.77 187.11,152.86 190.6,143.81Z"
+                                    fill="rgba(255,255,255,0.9)"/>
+                            <path
+                                    d="M319.33,297.11L319.91,297.26C320.45,297.75 322.4,303.63 322.93,304.9C325.04,310.06 331.23,311.15 336.17,313.06C325.06,317.3 323.85,316.04 320.35,328.36L319.81,328.4C318.94,327.43 317.11,321.61 316.16,319.98C313.84,316.01 308.04,314.43 303.9,313.16C314.79,308.48 315.99,309.62 319.33,297.11Z"
+                                    fill="rgba(255,255,255,0.9)"/>
+
+                        </svg>
+                    </div>
+                    <div class="phone-app-name">LeafLens</div>
+                    <div class="phone-tag">Every leaf tells a story.</div>
+                    <div class="phone-divider"></div>
+                    <div class="phone-scan-card">
+                        <p>📷 Scan a Plant</p>
+                        <small>Camera or photo library</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="padding:96px 5%">
+    <div style="max-width:1100px;margin:0 auto">
+        <div class="fade-up">
+            <span class="section-label">Features</span>
+            <h2 class="section-title">Everything your plants need.</h2>
+            <p class="section-sub">From instant diagnosis to long-term care tracking — LeafLens is
+                the only plant health companion you need.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card fade-up">
+                <div class="feature-icon icon-green">🔬</div>
+                <h3>AI Diagnosis in Seconds</h3>
+                <p>Point your camera at any sick plant. Claude AI identifies diseases, pests,
+                    nutrient deficiencies, and more — with up to 95% accuracy.</p>
+            </div>
+            <div class="feature-card fade-up">
+                <div class="feature-icon icon-amber">💊</div>
+                <h3>Treatment Plans</h3>
+                <p>Get personalised step-by-step treatment plans using home remedies you already
+                    have, plus targeted product recommendations when needed.</p>
+            </div>
+            <div class="feature-card fade-up">
+                <div class="feature-icon icon-teal">🌱</div>
+                <h3>Plant Collection</h3>
+                <p>Save all your plants in one place. Track health scores over time and build a
+                    complete diary of every scan and diagnosis.</p>
+            </div>
+            <div class="feature-card fade-up">
+                <div class="feature-icon icon-blue">💧</div>
+                <h3>Watering Reminders</h3>
+                <p>Never miss a watering again. Set smart reminders per plant and get notifications
+                    so your collection always thrives.</p>
+            </div>
+            <div class="feature-card fade-up">
+                <div class="feature-icon icon-purple">☁️</div>
+                <h3>Cloud Sync</h3>
+                <p>Your plant collection stays in sync across all your devices. Sign in with Google
+                    and access everything from anywhere.</p>
+            </div>
+            <div class="feature-card fade-up">
+                <div class="feature-icon icon-rose">📄</div>
+                <h3>PDF Reports <span
+                        style="font-size:.7rem;background:#FEF3C7;color:#92400E;padding:2px 6px;border-radius:50px;font-weight:600">Pro</span>
+                </h3>
+                <p>Export a complete plant health report as a PDF. Perfect for keeping records or
+                    consulting with a botanist or gardening expert.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="how-section">
+    <div class="how-inner">
+        <div class="fade-up">
+            <span class="section-label">How it works</span>
+            <h2 class="section-title">Three steps to a healthier plant.</h2>
+            <p class="section-sub">No expertise needed. Just point, snap, and follow the plan.</p>
+        </div>
+        <div class="steps">
+            <div class="step fade-up">
+                <div class="step-num">1</div>
+                <h3>Snap a Photo</h3>
+                <p>Take a photo of any leaf, stem, or the whole plant using your camera or pick from
+                    your gallery.</p>
+            </div>
+            <div class="step fade-up">
+                <div class="step-num">2</div>
+                <h3>Get Diagnosed</h3>
+                <p>Claude AI analyses the image in seconds and identifies exactly what's wrong —
+                    disease, pest, deficiency, or all three.</p>
+            </div>
+            <div class="step fade-up">
+                <div class="step-num">3</div>
+                <h3>Follow the Plan</h3>
+                <p>Get a clear, actionable treatment plan with causes, remedies, and prevention tips
+                    so it never happens again.</p>
+            </div>
+            <div class="step fade-up">
+                <div class="step-num">4</div>
+                <h3>Track Recovery</h3>
+                <p>Re-scan as your plant heals. Watch the health score climb and build a full
+                    diagnosis history over time.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="padding:96px 5%" id="pricing">
+    <div style="max-width:1100px;margin:0 auto">
+        <div class="fade-up">
+            <span class="section-label">Pricing</span>
+            <h2 class="section-title">Start free. Go Pro when you're ready.</h2>
+            <p class="section-sub">5 free AI diagnoses every month. Upgrade for unlimited access and
+                advanced features.</p>
+        </div>
+        <div class="pricing-grid">
+            <div class="plan-card fade-up">
+                <div class="plan-name">Free</div>
+                <div class="plan-price"><sup>₹</sup>0</div>
+                <div class="plan-period">forever free</div>
+                <div class="plan-divider"></div>
+                <ul class="plan-features">
+                    <li>5 AI diagnoses / month</li>
+                    <li>Full treatment plans</li>
+                    <li>Plant collection</li>
+                    <li>Watering reminders</li>
+                    <li>Cloud backup</li>
+                    <li class="muted">Full diagnosis history</li>
+                    <li class="muted">PDF export</li>
+                    <li class="muted">Priority support</li>
+                </ul>
+                <a href="https://play.google.com/store/apps/details?id=com.leaflens.app"
+                   class="plan-cta plan-cta-ghost">Download Free</a>
+            </div>
+            <div class="plan-card featured fade-up">
+                <div class="plan-badge">Most Popular</div>
+                <div class="plan-name">Pro Yearly</div>
+                <div class="plan-price"><sup>₹</sup>1,399</div>
+                <div class="plan-period">per year · ₹116/mo · Save 41%</div>
+                <div class="plan-divider"></div>
+                <ul class="plan-features">
+                    <li>Unlimited AI diagnoses</li>
+                    <li>Full treatment plans</li>
+                    <li>Plant collection</li>
+                    <li>Watering reminders</li>
+                    <li>Cloud backup</li>
+                    <li>Full diagnosis history</li>
+                    <li>PDF export</li>
+                    <li>Priority email support</li>
+                </ul>
+                <a href="https://play.google.com/store/apps/details?id=com.leaflens.app"
+                   class="plan-cta plan-cta-solid">Get Pro</a>
+            </div>
+            <div class="plan-card fade-up">
+                <div class="plan-name">Pro Monthly</div>
+                <div class="plan-price"><sup>₹</sup>199</div>
+                <div class="plan-period">per month · cancel anytime</div>
+                <div class="plan-divider"></div>
+                <ul class="plan-features">
+                    <li>Unlimited AI diagnoses</li>
+                    <li>Full treatment plans</li>
+                    <li>Plant collection</li>
+                    <li>Watering reminders</li>
+                    <li>Cloud backup</li>
+                    <li>Full diagnosis history</li>
+                    <li>PDF export</li>
+                    <li>Priority email support</li>
+                </ul>
+                <a href="https://play.google.com/store/apps/details?id=com.leaflens.app"
+                   class="plan-cta plan-cta-ghost">Get Pro Monthly</a>
+            </div>
+            <div class="plan-card fade-up">
+                <div class="plan-name">Lifetime</div>
+                <div class="plan-price"><sup>₹</sup>2,499</div>
+                <div class="plan-period">one-time · pay once, use forever</div>
+                <div class="plan-divider"></div>
+                <ul class="plan-features">
+                    <li>Everything in Pro</li>
+                    <li>No recurring charges</li>
+                    <li>All future updates</li>
+                </ul>
+                <a href="https://play.google.com/store/apps/details?id=com.leaflens.app"
+                   class="plan-cta plan-cta-ghost">Get Lifetime</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <h2>Ready to save your plants?</h2>
+    <p>Join thousands of plant lovers who diagnose and treat plant problems in seconds.</p>
+    <a href="https://play.google.com/store/apps/details?id=com.leaflens.app" class="play-btn">
+        <svg viewBox="0 0 24 24" fill="white">
+            <path d="m 12.954 11.616 l 2.957 -2.957 L 6.36 3.291 c -0.633 -0.342 -1.226 -0.39 -1.746 -0.016 l 8.34 8.341 Z m 3.461 3.462 l 3.074 -1.729 c 0.6 -0.336 0.929 -0.812 0.929 -1.34 c 0 -0.527 -0.329 -1.004 -0.928 -1.34 l -2.783 -1.563 l -3.133 3.132 l 2.841 2.84 Z M 4.1 4.002 c -0.064 0.197 -0.1 0.417 -0.1 0.658 v 14.705 c 0 0.381 0.084 0.709 0.236 0.97 l 8.097 -8.098 L 4.1 4.002 Z m 8.854 8.855 L 4.902 20.91 c 0.154 0.059 0.32 0.09 0.495 0.09 c 0.312 0 0.637 -0.092 0.968 -0.276 l 9.255 -5.197 l -2.666 -2.67 Z"/>
+        </svg>
+        <div class="play-btn-text"><small>Get it on</small><strong>Google Play</strong></div>
+    </a>
+</section>
+
+<footer>
+    <div class="footer-inner">
+        <div>
+            <div class="footer-brand">
+                <svg width="28" height="28" viewBox="0 0 500 500" fill="none">
+                    <rect width="500" height="500" rx="100" fill="#14B8A6"/>
+<!--                    <path d="M246.94,63.1C251.49,62.49 260.02,63.55 264.74,63.95C290.92,66.12 318.49,76 340.15,90.93C378.58,117.46 404.93,158.14 413.45,204.05C422.66,252.28 411.97,302.17 383.81,342.39C357.53,380.14 313.89,407.83 267.76,412.52C249.63,414.36 226.43,413.22 211.08,402.37C200.6,395.09 193.48,383.9 191.34,371.32C189.33,359.65 190.78,349.36 195.45,338.58C199.86,332.95 199.26,337.5 199.65,340.93C203.24,372.49 235.45,378.77 261.72,376.64C295.53,373.9 326.39,355.28 347.7,329.57C365.86,307.92 377.02,281.25 379.69,253.1C381.72,233.63 379.66,213.76 373.94,195.02C365.96,169.35 350.7,146.55 330.01,129.39C304.16,108.07 272.17,97.37 238.69,100.6C208.84,103.52 180.99,116.92 160.09,138.43C132.93,165.95 119.26,202.51 119.56,241C120.13,278.43 135.52,314.12 162.36,340.22C166.68,325 177.79,306.87 187.56,294.66C205.66,272.28 228.14,253.83 253.63,240.46C255.86,239.27 263.3,235.15 265.57,234.9L265.75,235.29C265.39,236.1 261.61,238.89 260.57,239.75C255.31,244.08 250.17,248.54 245.14,253.13C215.46,280.27 181.23,317.12 177.84,359.45C176.66,374.17 180.74,390.5 190.92,401.55C180.44,398.64 160.42,386.22 151.66,379.51C114.82,351.19 91.66,308.63 85.07,262.98C72.47,175.74 127.85,85.22 216.36,66.8C222.28,65.51 228.27,64.59 234.31,64.04C238,63.72 243.2,63.65 246.56,63.16L246.94,63.1Z"-->
+<!--                          fill="white"/>-->
+
+                    <path
+                            d="M246.94,63.1C251.49,62.49 260.02,63.55 264.74,63.95C290.92,66.12 318.49,76 340.15,90.93C378.58,117.46 404.93,158.14 413.45,204.05C422.66,252.28 411.97,302.17 383.81,342.39C357.53,380.14 313.89,407.83 267.76,412.52C249.63,414.36 226.43,413.22 211.08,402.37C200.6,395.09 193.48,383.9 191.34,371.32C189.33,359.65 190.78,349.36 195.45,338.58C197,335.01 197.82,332.69 200.09,329.47C199.86,332.95 199.26,337.5 199.65,340.93C203.24,372.49 235.45,378.77 261.72,376.64C295.53,373.9 326.39,355.28 347.7,329.57C365.86,307.92 377.02,281.25 379.69,253.1C381.72,233.63 379.66,213.76 373.94,195.02C365.96,169.35 350.7,146.55 330.01,129.39C304.16,108.07 272.17,97.37 238.69,100.6C208.84,103.52 180.99,116.92 160.09,138.43C132.93,165.95 119.26,202.51 119.56,241C120.13,278.43 135.52,314.12 162.36,340.22C166.68,325 177.79,306.87 187.56,294.66C205.66,272.28 228.14,253.83 253.63,240.46C255.86,239.27 263.3,235.15 265.57,234.9L265.75,235.29C265.39,236.1 261.61,238.89 260.57,239.75C255.31,244.08 250.17,248.54 245.14,253.13C215.46,280.27 181.23,317.12 177.84,359.45C176.66,374.17 180.74,390.5 190.92,401.55C180.44,398.64 160.42,386.22 151.66,379.51C114.82,351.19 91.66,308.63 85.07,262.98C72.47,175.74 127.85,85.22 216.36,66.8C222.28,65.51 228.27,64.59 234.31,64.04C238,63.72 243.2,63.65 246.56,63.16L246.94,63.1Z"
+                            fill="rgba(255,255,255,0.9)"/>
+                    <path
+                            d="M321.96,146.85L322.58,147.05C323.93,148.82 325.35,153.8 326.07,156.05C340.99,203.38 333.5,261.89 293.25,294.73C272.29,311.83 245.32,319.21 218.86,321.92C215.49,322.27 206.92,322.95 203.65,322.61C203.32,321.16 206.15,315.77 206.94,314.1C213.34,300.6 222.8,288.91 232.79,277.92C247.9,261.28 266.38,247.72 280.4,230.09C282.75,227.15 292.15,212.48 292.35,209.43L291.86,209.38C287.42,213.48 275.08,220.59 269.58,223.39C244.97,235.9 221.77,244.91 201.51,264.62C195.8,270.1 190.43,275.92 185.43,282.04C182.16,286.1 179.04,290.26 176.06,294.54C175.03,296.02 172.37,300.94 170.94,301.37C170.4,300.88 170.23,298.98 170.16,298.15C168.74,279.85 169.41,265.37 176.15,248.27C187,220.74 207.24,207.46 233.43,196.29C244.38,191.61 254.76,187.57 266,183.37C280.31,178.03 295.16,171.79 307.35,162.44C313.32,157.87 317.39,152.71 321.96,146.85Z"
+                            fill="rgba(255,255,255,0.9)"/>
+                    <path
+                            d="M190.6,143.81C193,144.92 195.01,156.92 198.13,160.13C203.79,165.97 210.59,166.02 217.25,169.15C216.05,169.63 213.67,170.34 212.42,170.67C197.03,174.79 196.29,180.33 191.63,194.13C191.18,194.13 190.9,194.23 190.76,193.95C188.43,189.02 187.85,184.34 184.96,179.52C180.73,172.45 172.61,172.74 166.65,169.36L166.56,168.9C167.27,167.96 174.93,165.62 176.95,164.81C187.05,160.77 187.11,152.86 190.6,143.81Z"
+                            fill="rgba(255,255,255,0.9)"/>
+                    <path
+                            d="M319.33,297.11L319.91,297.26C320.45,297.75 322.4,303.63 322.93,304.9C325.04,310.06 331.23,311.15 336.17,313.06C325.06,317.3 323.85,316.04 320.35,328.36L319.81,328.4C318.94,327.43 317.11,321.61 316.16,319.98C313.84,316.01 308.04,314.43 303.9,313.16C314.79,308.48 315.99,309.62 319.33,297.11Z"
+                            fill="rgba(255,255,255,0.9)"/>
+                </svg>
+                <span>LeafLens</span>
+            </div>
+            <p class="footer-desc">AI-powered plant health diagnosis for Android. Built by Yadnyesh
+                Rana.</p>
+        </div>
+        <div class="footer-links">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="delete-account.html">Delete Account</a>
+            <a href="mailto:yogirana5557@gmail.com">Support</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2025 LeafLens. Built by Yadnyesh Rana.</span>
+        <span>yogirana5557@gmail.com</span>
+    </div>
+</footer>
+
+<script>
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible') })
+    }, {threshold: 0.12})
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el))
+</script>
+</body>
+</html>
